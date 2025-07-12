@@ -87,7 +87,7 @@ function onCardClick(card, src) {
   }
 }
 
-/* ======== Párok ellenőrzése (eltűnő párok) ======== */
+/* ======== Párok ellenőrzése (üres kártya helyett eltűnő párok) ======== */
 function checkMatch() {
   const [a, b] = flippedCards;
 
@@ -95,9 +95,13 @@ function checkMatch() {
     a.card.classList.add('matched');
     b.card.classList.add('matched');
 
-    setTimeout(() => {                        // 1 mp múlva eltűnik
-      a.card.remove();
-      b.card.remove();
+    setTimeout(() => { 
+      // Üres átlátszó kártyák helyezése a megtalált kártyák helyére
+      const emptyCardA = createEmptyCard();
+      const emptyCardB = createEmptyCard();
+
+      a.card.parentElement.replaceChild(emptyCardA, a.card);
+      b.card.parentElement.replaceChild(emptyCardB, b.card);
     }, 1000);
 
     if (++matchedPairs === totalPairs) endGame();
@@ -109,6 +113,20 @@ function checkMatch() {
       flippedCards = [];
     }, 1000);
   }
+}
+
+/* ======== Üres kártya létrehozása ======== */
+function createEmptyCard() {
+  const emptyCard = Object.assign(document.createElement('div'), { className: 'empty-card' });
+  const inner = Object.assign(document.createElement('div'), { className: 'card-inner' });
+  const front = Object.assign(document.createElement('div'), { className: 'card-front' });
+  const back  = Object.assign(document.createElement('div'), { className: 'card-back' });
+
+  front.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'; // Átlátszó háttér
+  inner.append(front, back);
+  emptyCard.appendChild(inner);
+
+  return emptyCard;
 }
 
 /* ======== Időmérő ======== */
